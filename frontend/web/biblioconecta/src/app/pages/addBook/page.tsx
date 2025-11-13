@@ -1,0 +1,124 @@
+"use client";
+import { useState } from "react";
+import Parse from "../../../parseConfig";
+import NavBar from "../../../components/navBar";
+import SideBar from "../../../components/sideBar";
+
+const AddBookPage = () => {
+  const [titulo, setTitulo] = useState("");
+  const [autor, setAutor] = useState("");
+  const [ano, setAno] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [mensagem, setMensagem] = useState("");
+
+  // Função que envia os dados para o Back4App
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const Livro = Parse.Object.extend("Livros");
+      const novoLivro = new Livro();
+
+      novoLivro.set("titulo", titulo);
+      novoLivro.set("autor", autor);
+      novoLivro.set("ano", ano);
+      novoLivro.set("categoria", categoria);
+
+      await novoLivro.save();
+
+      setMensagem("📚 Livro cadastrado com sucesso!");
+      setTitulo("");
+      setAutor("");
+      setAno("");
+      setCategoria("");
+    } catch (error: any) {
+      console.error("Erro ao cadastrar livro:", error);
+      setMensagem("❌ Erro ao cadastrar o livro. Tente novamente.");
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gray-100">
+      <SideBar />
+      <div className="flex-1">
+        <NavBar />
+        <div className="p-8 max-w-xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6 text-center text-blue-700">
+            Cadastrar Novo Livro
+          </h1>
+
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-6 rounded-lg shadow-md space-y-4"
+          >
+            {/* Campo: Título */}
+            <div>
+              <label className="block font-medium">Título</label>
+              <input
+                type="text"
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
+                required
+                className="w-full border rounded px-3 py-2"
+                placeholder="Digite o título do livro"
+              />
+            </div>
+
+            {/* Campo: Autor */}
+            <div>
+              <label className="block font-medium">Autor</label>
+              <input
+                type="text"
+                value={autor}
+                onChange={(e) => setAutor(e.target.value)}
+                required
+                className="w-full border rounded px-3 py-2"
+                placeholder="Digite o nome do autor"
+              />
+            </div>
+
+            {/* Campo: Ano */}
+            <div>
+              <label className="block font-medium">Ano</label>
+              <input
+                type="number"
+                value={ano}
+                onChange={(e) => setAno(e.target.value)}
+                className="w-full border rounded px-3 py-2"
+                placeholder="Ex: 2025"
+              />
+            </div>
+
+            {/* Campo: Categoria */}
+            <div>
+              <label className="block font-medium">Categoria</label>
+              <input
+                type="text"
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+                className="w-full border rounded px-3 py-2"
+                placeholder="Ex: Romance, Técnico..."
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition"
+            >
+              Cadastrar Livro
+            </button>
+          </form>
+
+          {/* Mensagem de sucesso ou erro */}
+          {mensagem && (
+            <p className="text-center mt-4 text-green-600 font-medium">
+              {mensagem}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddBookPage;
